@@ -18,9 +18,11 @@ banner() {
 
 main() {
     pids=()
-    if [[ ! -d "${name}.html" ]]; then
+    if [[ ! -d "${name}" ]]; then
    	echo -e "${w}[${r}!${w}]${r}!!! HTML Page Not Found !!!"
    	dmake
+   	else
+   	echo ""
     fi
     sl=${sl:-sl.txt}
     if ! [[ -e $sl ]]; then
@@ -28,6 +30,8 @@ main() {
     echo -e "${w}[${r}!${w}]${r}!!! Site List Not Found !!!"
     echo -e "${w}[${g}+${w}]${g}Downloading Site List${n}"
     curl -s -o sl.txt https://raw.githubusercontent.com/DH-Alamin/file/main/sl.txt
+    else
+    echo ""
     fi
     for site in $(< sl.txt); do
         if [[ ${#pids[@]} -ge 2 ]]; then
@@ -87,7 +91,7 @@ curl -s -o def.html https://raw.githubusercontent.com/DH-Alamin/file/main/Def.ht
 cat >> def.html <<-EOF
 <h1 class="one">
                 Hi
-                <span id="name">${name}</span>
+                <span id="name">${nam}</span>
             </h1>
             <p class="two" id="greetingText">তোমাকে একটা কথা বলতে চাই!!!</p>
         </div>
@@ -127,7 +131,7 @@ cat >> def.html <<-EOF
             <img src="https://raw.githubusercontent.com/DH-Alamin/file/main/img/FB_IMG_1699603953743.jpg" alt="profile" class="profile-picture" id="imagePath"/>
             <img src="https://raw.githubusercontent.com/DH-Alamin/file/main/img/hat.svg" alt="hat" class="hat" />
             <div class="wish">
-                <h3 class="wish-hbd">Happy Birthday!!! ${name}</h3>
+                <h3 class="wish-hbd">Happy Birthday!!! ${nam}</h3>
                 <h5 id="wishText">${wishtext}</h5>
             </div>
         </div>
