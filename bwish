@@ -18,20 +18,12 @@ banner() {
 
 main() {
     pids=()
-    if [[ ! -d "${name}" ]]; then
-   	echo -e "${w}[${r}!${w}]${r}!!! HTML Page Not Found !!!"
-   	dmake
-   	else
-   	echo ""
-    fi
     sl=${sl:-sl.txt}
     if ! [[ -e $sl ]]; then
     printf "\n"
     echo -e "${w}[${r}!${w}]${r}!!! Site List Not Found !!!"
     echo -e "${w}[${g}+${w}]${g}Downloading Site List${n}"
     curl -s -o sl.txt https://raw.githubusercontent.com/DH-Alamin/file/main/sl.txt
-    else
-    echo ""
     fi
     for site in $(< sl.txt); do
         if [[ ${#pids[@]} -ge 2 ]]; then
@@ -209,7 +201,7 @@ cat >> def.html <<-EOF
             <p>Or click reply, if you want to watch it again.</p>
             <p id="replay">REPLY</p>
             <p class="last-smile">:)</p>
-            <br><br><br><p>github.com</p>
+            <br><br><br><a>github.com/DH-Alamin</a>
         </div>
     </div>
 
