@@ -16,15 +16,10 @@ banner() {
 }
 
 
+
+
 main() {
     pids=()
-    sl=${sl:-sl.txt}
-    if ! [[ -e $sl ]]; then
-    printf "\n"
-    echo -e "${w}[${r}!${w}]${r}!!! Site List Not Found !!!"
-    echo -e "${w}[${g}+${w}]${g}Downloading Site List${n}"
-    curl -s -o sl.txt https://raw.githubusercontent.com/DH-Alamin/file/main/sl.txt
-    fi
     for site in $(< sl.txt); do
         if [[ ${#pids[@]} -ge 2 ]]; then
             wait -n
