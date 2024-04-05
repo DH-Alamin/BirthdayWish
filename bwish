@@ -129,7 +129,8 @@ cat >> def.html <<-EOF
             <img src="https://raw.githubusercontent.com/DH-Alamin/file/main/img/FB_IMG_1699603953743.jpg" alt="profile" class="profile-picture" id="imagePath"/>
             <img src="https://raw.githubusercontent.com/DH-Alamin/file/main/img/hat.svg" alt="hat" class="hat" />
             <div class="wish">
-                <h3 class="wish-hbd">Happy Birthday!!! ${nam}</h3>
+                <h3 class="wish-hbd">Happy Birthday!!!</h3>
+                <h3 class="wish-hbd">${nam}</h3>
                 <h5 id="wishText">${wishtext}</h5>
             </div>
         </div>
