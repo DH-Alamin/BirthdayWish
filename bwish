@@ -207,7 +207,7 @@ cat >> def.html <<-EOF
             <p>Or click reply, if you want to watch it again.</p>
             <p id="replay">REPLY</p>
             <p class="last-smile">:)</p>
-            <br><br><br><a>github.com/DH-Alamin</a>
+            <br><br><br><br><br><br><br><p><a href="https://github.com/DH-Alamin">GitHub</a></p>
         </div>
     </div>
 
