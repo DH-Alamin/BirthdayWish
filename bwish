@@ -27,7 +27,7 @@ fi
 done
 
 kill_pid() {
-	check_PID="php ngrok cloudflared loclx"
+	check_PID="php cloudflared"
 	for process in ${check_PID}; do
 		if [[ $(pidof ${process}) ]]; then # Check for Process
 			killall ${process} > /dev/null 2>&1 # Kill the Process
