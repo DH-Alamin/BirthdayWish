@@ -178,13 +178,13 @@ fi
 
 ask() {
 
-echo -ne "${w}>>> ${g}Enter Name ${w}:${g} "
+echo -ne "\n${w}>>> ${g}Enter Name ${w}:${g} "
 read nam
-echo -ne "${w}>>> ${g}Enter Chatbox Text ${w}:${g} "
+echo -ne "\n${w}>>> ${g}Enter Chatbox Text ${w}:${g} "
 read chatbox
-echo -ne "${w}>>> ${g}Enter wishtext ${w}:${g} "
+echo -ne "\n${w}>>> ${g}Enter wishtext ${w}:${g} "
 read wishtext
-echo -ne "${w}>>> ${g}Enter IMG Link ${w}:${g} "
+echo -ne "\n${w}>>> ${g}Enter IMG Link ${w}:${g} "
 read img
 echo -e "${n}"
 }
@@ -341,4 +341,4 @@ name="${nam}.html"
 checkdir
 install_cloudflared
 start_cloudflared
-
+echo -e "\n\n${w}[${g}#${w}]${g}Bye Bye\n\n${n}"
