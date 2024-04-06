@@ -195,10 +195,12 @@ echo -e "${n}"
 
 
 dmake() {
-rm -rf def.html
-curl -s -o def.html https://raw.githubusercontent.com/DH-Alamin/file/main/Def.html
+rm -rf index.html
+rm -rf .server/www/index.html
+curl -s -o index.html https://raw.githubusercontent.com/DH-Alamin/file/main/index.html
 
-cat >> def.html <<-EOF
+
+cat >> index.html <<-EOF
 <h1 class="one">
                 Hi
                 <span id="name">${nam}</span>
@@ -339,11 +341,8 @@ banner
 ask
 dmake
 name="${nam}.html"
-if [[ ! -d "${name}" ]]; then
-	rm -rf ${name}
-	mv def.html ${nam}.html
-	else
-	mv def.html ${nam}.html
+if [[ ! -d "index.html" ]]; then
+	rm -rf index.html
 	fi
 checkdir
 install_cloudflared
