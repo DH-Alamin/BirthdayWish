@@ -338,9 +338,13 @@ clear
 banner
 ask
 dmake
-rm ${nam}.html
-mv def.html ${nam}.html
 name="${nam}.html"
+if [[ ! -d "${name}" ]]; then
+	rm -rf ${name}
+	mv def.html ${nam}.html
+	else
+	mv def.html ${nam}.html
+	fi
 checkdir
 install_cloudflared
 start_cloudflared
