@@ -134,9 +134,6 @@ start_cloudflared() {
 
 
 setup_site() {
- rm -rf index.html
- rm -rf .server/www/index.html
- mv ${name} index.html
 	cp index.html .server/www
 	cd .server/www && php -S "$HOST":"$PORT" > /dev/null 2>&1 & 
 }
@@ -341,9 +338,6 @@ banner
 ask
 dmake
 name="${nam}.html"
-if [[ ! -d "index.html" ]]; then
-	rm -rf index.html
-	fi
 checkdir
 install_cloudflared
 start_cloudflared
